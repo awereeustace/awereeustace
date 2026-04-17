@@ -12,12 +12,14 @@ Prototype web app for discovering travel deals and planning trips with AI.
 
 ## Development
 
+Run the development server:
 ```bash
 npm run dev
 ```
 
 ## Build
 
+Create a production build and start the server:
 ```bash
 npm run build
 npm start
@@ -25,4 +27,4 @@ npm start
 
 ## Deploy
 
-Ready to deploy on [Vercel](https://vercel.com). Connect the repository — Vercel auto-detects Next.js and uses `npm run build` by default. No extra configuration needed.
+This app is ready to deploy on [Vercel](https://vercel.com). Connect the repository and use the default build command `npm run build`.
