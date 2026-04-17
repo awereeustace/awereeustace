@@ -17,9 +17,9 @@ export default function Home() {
       <div className="flex w-full max-w-xs flex-col gap-2">
         <Button>Login</Button>
         <Button>Sign Up</Button>
-        <Button className="bg-white text-black border border-gray-300">Continue with Google</Button>
-        <Button className="bg-white text-black border border-gray-300">Continue with Apple</Button>
-        <Button className="bg-transparent text-sm text-blue-600 hover:bg-blue-50" onClick={() => setGuest(true)}>
+        <Button className="bg-white text-black border" >Continue with Google</Button>
+        <Button className="bg-white text-black border" >Continue with Apple</Button>
+        <Button className="text-sm text-blue-600" onClick={() => setGuest(true)}>
           Continue as Guest
         </Button>
       </div>
