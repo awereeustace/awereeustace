@@ -2,33 +2,32 @@
 
 import { useState } from "react";
 import OnBudgetPrototype from "@/components/OnBudgetPrototype";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/ui/Button";
 
 export default function Home() {
   const [guest, setGuest] = useState(false);
 
-  if (guest) return <OnBudgetPrototype />;
+  if (guest) return <OnBudgetPrototype onSignOut={() => setGuest(false)} />;
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-gradient-to-b from-green-50 to-white p-4">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-gradient-to-b from-white to-slate-50 p-4">
       <div className="text-center">
-        <div className="mb-2 text-5xl">✈️</div>
-        <h1 className="text-4xl font-bold text-green-700">OnBajet</h1>
-        <p className="mt-2 text-gray-500">Discover travel deals. Plan smarter with AI.</p>
+        <h1 className="text-4xl font-semibold tracking-tight">OnBaJet</h1>
+        <p className="mt-2 text-slate-600">Find eats that fit your price—then squeeze the total with smart deals.</p>
       </div>
 
       <div className="flex w-full max-w-sm flex-col gap-3">
-        <Button className="w-full py-3 text-base">Login</Button>
-        <Button className="w-full py-3 text-base bg-green-700 hover:bg-green-800">Sign Up</Button>
+        <Button className="w-full py-3 text-base rounded-2xl">Login</Button>
+        <Button className="w-full py-3 text-base rounded-2xl">Sign Up</Button>
         <div className="relative flex items-center gap-2">
           <div className="flex-1 border-t border-gray-200" />
           <span className="text-xs text-gray-400">or continue with</span>
           <div className="flex-1 border-t border-gray-200" />
         </div>
-        <Button className="w-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 gap-2">
+        <Button variant="secondary" className="w-full rounded-2xl gap-2">
           <GoogleIcon /> Continue with Google
         </Button>
-        <Button className="w-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 gap-2">
+        <Button variant="secondary" className="w-full rounded-2xl gap-2">
           <AppleIcon /> Continue with Apple
         </Button>
         <button
@@ -40,7 +39,7 @@ export default function Home() {
       </div>
 
       <p className="text-center text-xs text-gray-400 max-w-xs">
-        By continuing, you agree to our Terms of Service and Privacy Policy.
+        By continuing you agree to our Terms of Service and Privacy Policy.
       </p>
     </main>
   );
