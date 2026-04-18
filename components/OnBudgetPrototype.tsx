@@ -1,9 +1,12 @@
 import * as React from "react";
+import dynamic from "next/dynamic";
 import { Card, CardContent } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Slider from "@/components/ui/Slider";
 import Badge from "@/components/ui/Badge";
+
+const MapRadiusPicker = dynamic(() => import("@/components/MapRadiusPicker"), { ssr: false });
 
 type Coupon = { id: string; label: string; type: "flat" | "percent"; value: number; minSpend?: number; cap?: number; source: string };
 type MenuItem = { id: string; name: string; vendor: string; cuisine: string[]; basePrice: number; estFeesTax: number; pickupAvailable: boolean; coupons: Coupon[]; url?: string; distanceMi?: number; lat?: number; lng?: number; };
@@ -27,6 +30,20 @@ export default function OnBudgetPrototype({ onSignOut }:{ onSignOut?:()=>void })
   const [showAboveBudget,setShowAboveBudget]=React.useState(true);
   const [selectedId,setSelectedId]=React.useState<string|null>(null);
 
+  const [mapCenter, setMapCenter] = React.useState<[number, number]>([40.7128, -74.006]);
+  const [radiusMi, setRadiusMi] = React.useState(2.0);
+  const [locating, setLocating] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof navigator !== "undefined" && navigator.geolocation) {
+      setLocating(true);
+      navigator.geolocation.getCurrentPosition(
+        (p) => { setMapCenter([p.coords.latitude, p.coords.longitude]); setLocating(false); },
+        () => setLocating(false)
+      );
+    }
+  }, []);
+
   const [walkMaxMi,setWalkMaxMi]=React.useState(1.0);
   const [gasPrice,setGasPrice]=React.useState(3.75);
   const [customMPG,setCustomMPG]=React.useState<number|undefined>(undefined);
@@ -40,8 +57,10 @@ export default function OnBudgetPrototype({ onSignOut }:{ onSignOut?:()=>void })
       const {coupon,discount}=includeCoupons?bestCoupon(subtotal,i.coupons):{coupon:null,discount:0};
       const adjusted=Math.max(0, subtotal-discount);
       return {...i, subtotal, coupon, discount, adjusted, fitsBudget: adjusted<=budget};
-    }).filter(r=>showAboveBudget?true:r.fitsBudget).sort((a,b)=>a.adjusted-b.adjusted);
-  },[budget,cuisines,includeCoupons,pickupOnly,showAboveBudget]);
+    }).filter(r=>showAboveBudget?true:r.fitsBudget)
+      .filter(r => (r.distanceMi ?? 0) <= radiusMi)
+      .sort((a,b)=>a.adjusted-b.adjusted);
+  },[budget,cuisines,includeCoupons,pickupOnly,showAboveBudget,radiusMi]);
 
   const selected=results.find(r=>r.id===selectedId)||null;
 
@@ -66,6 +85,32 @@ export default function OnBudgetPrototype({ onSignOut }:{ onSignOut?:()=>void })
           <Button variant="secondary" onClick={()=>setPickupOnly(v=>!v)} className="rounded-xl">{pickupOnly?"Pickup only":"Pickup or delivery"}</Button>
           <Button variant="secondary" onClick={()=>setShowAboveBudget(v=>!v)} className="rounded-xl">{showAboveBudget?"Show all (incl above budget)":"Within budget only"}</Button>
         </div>
+      </CardContent></Card>
+
+      {/* Map radius picker */}
+      <Card className="rounded-2xl shadow-sm mt-4"><CardContent className="p-4 md:p-6 space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-medium text-slate-700">Search radius</div>
+            <div className="text-xs text-slate-500">{locating ? "Detecting location…" : "Click map to move center"}</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold">{radiusMi.toFixed(1)} mi</span>
+            <Button variant="secondary" className="text-xs py-1 px-2 rounded-lg" onClick={() => {
+              setLocating(true);
+              navigator.geolocation?.getCurrentPosition(
+                (p) => { setMapCenter([p.coords.latitude, p.coords.longitude]); setLocating(false); },
+                () => setLocating(false)
+              );
+            }}>📍 My location</Button>
+          </div>
+        </div>
+        <Slider value={radiusMi} min={0.25} max={10} step={0.25} onChange={setRadiusMi} />
+        <MapRadiusPicker
+          center={mapCenter}
+          radiusMi={radiusMi}
+          onCenterChange={(lat, lng) => setMapCenter([lat, lng])}
+        />
       </CardContent></Card>
 
       <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
