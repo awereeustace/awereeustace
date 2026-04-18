@@ -5,6 +5,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Slider from "@/components/ui/Slider";
 import Badge from "@/components/ui/Badge";
+import CouponEngine from "@/components/CouponEngine";
 
 const MapRadiusPicker = dynamic(() => import("@/components/MapRadiusPicker"), { ssr: false });
 
@@ -138,11 +139,18 @@ export default function OnBudgetPrototype({ onSignOut }:{ onSignOut?:()=>void })
 
       {selected && (<Card className="rounded-2xl shadow-sm border-emerald-300 mt-8"><CardContent className="p-5 md:p-6 space-y-5">
         <div className="flex items-start justify-between">
-          <div><div className="text-sm uppercase tracking-wide text-slate-500">Travel + Cost Optimizer</div>
-            <h2 className="text-xl font-semibold">Best way to get your <span className="underline">{selected.name}</span></h2>
-            <div className="text-slate-600 text-sm">Distance ~ {selected.distanceMi?.toFixed(1)} mi one-way</div></div>
+          <div><div className="text-sm uppercase tracking-wide text-slate-500">Deal Optimizer</div>
+            <h2 className="text-xl font-semibold"><span className="underline">{selected.name}</span> from {selected.vendor}</h2>
+            <div className="text-slate-600 text-sm">Subtotal before coupons: {formatUSD(selected.subtotal)}</div></div>
           <Button variant="secondary" className="rounded-xl" onClick={()=>setSelectedId(null)}>Close</Button>
         </div>
+
+        {/* Live coupon engine */}
+        <CouponEngine vendor={selected.vendor} subtotal={selected.subtotal} />
+
+        <hr className="border-slate-200" />
+        <div className="text-sm uppercase tracking-wide text-slate-400 font-medium">Travel cost optimizer</div>
+        <div className="text-slate-600 text-sm">Distance ~ {selected.distanceMi?.toFixed(1)} mi one-way</div>
         <div className="grid md:grid-cols-3 gap-4">
           <div className="space-y-2"><div className="text-sm font-medium">Walk comfort range</div>
             <div className="px-1"><Slider value={walkMaxMi} min={0.25} max={3} step={0.25} onChange={setWalkMaxMi} /></div>
