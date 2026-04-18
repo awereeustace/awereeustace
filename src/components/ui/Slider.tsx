@@ -1,25 +1,6 @@
 import * as React from "react";
-import { cn } from "@/lib/utils";
-
-type SliderProps = {
-  value: number;
-  min?: number;
-  max?: number;
-  step?: number;
-  onChange: (value: number) => void;
-  className?: string;
-};
-
-export default function Slider({ value, min, max, step, onChange, className }: SliderProps) {
-  return (
-    <input
-      type="range"
-      value={value}
-      min={min}
-      max={max}
-      step={step}
-      onChange={(e) => onChange(Number(e.target.value))}
-      className={cn("w-full cursor-pointer accent-blue-600", className)}
-    />
-  );
+export default function Slider({ value, min, max, step, onChange }:{ value:number; min:number; max:number; step?:number; onChange:(v:number)=>void; }) {
+  const [v, setV] = React.useState(value);
+  React.useEffect(() => setV(value), [value]);
+  return <input type="range" min={min} max={max} step={step ?? 1} value={v} onChange={e => { const n = Number(e.target.value); setV(n); onChange(n); }} className="w-full" />;
 }
